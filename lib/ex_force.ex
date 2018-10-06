@@ -225,6 +225,53 @@ defmodule ExForce do
   end
 
   @doc """
+  Use the Composite API to create nested records.
+
+  This can also be used to create multiple (up to 200) unrelated records of a type.
+  If more than 200 records need to be inserted at once, try using the Bulk API.
+
+  See [Create Nested Records](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_create.htm)
+  """
+  @spec create_nested_sobjects(Client.t(), sobject_name, map) :: {:ok, any} | {:error, any}
+  def create_nested_sobjects(client, name, attrs) do
+    case request(client, method: :post, url: "composite/tree/#{name}", body: attrs) do
+      {:ok, %Tesla.Env{status: 201, body: body}} -> {:ok, body}
+      {:ok, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, _} = other -> other
+    end
+  end
+
+  @doc """
+  Uses the Composite API to create multiple requests in a single call.
+
+  This is typically used to manage dependent requests such as inserting related records without juggling multiple requests.
+
+  See [Compose Resources](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_composite.htm)
+  """
+  @spec composite_request(Client.t(), map) :: {:ok, any} | {:error, any}
+  def composite_request(client, attrs) do
+    case request(client, method: :post, url: "composite", body: attrs) do
+      {:ok, %Tesla.Env{status: 201, body: body}} -> {:ok, body}
+      {:ok, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, _} = other -> other
+    end
+  end
+
+  @doc """
+  Uses the SObject Rows by External ID resource to create/update records based on an external ID field.
+
+  See [Insert/Update a Record Using an External ID](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm)
+  """
+  def upsert_sobject_using_external_id(client, name, external_id_field, external_id, attrs) do
+    case request(client, method: :patch, url: "sobjects/#{name}/#{external_id_field}/#{external_id}", body: attrs) do
+      {:ok, %Tesla.Env{status: 201, body: body}} -> {:ok, body}
+      {:ok, %Tesla.Env{status: 204, body: body}} -> {:ok, body}
+      {:ok, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, _} = other -> other
+    end
+  end
+
+  @doc """
   Deletes a SObject.
 
   [SObject Rows](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_sobject_retrieve.htm)
