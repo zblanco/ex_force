@@ -46,7 +46,7 @@ defmodule ExForce.Client.Tesla do
       [
         {ExForce.Client.Tesla.Middleware,
          {instance_url, Keyword.get(opts, :api_version, @default_api_version)}},
-        {Tesla.Middleware.Compression, format: "gzip"},
+        # {Tesla.Middleware.Compression, format: "gzip"},
         {Tesla.Middleware.JSON, engine: Jason},
         {Tesla.Middleware.Headers, Keyword.get(opts, :headers, [])}
       ],
@@ -66,7 +66,7 @@ defmodule ExForce.Client.Tesla do
     Tesla.client(
       [
         {Tesla.Middleware.BaseUrl, url},
-        {Tesla.Middleware.Compression, format: "gzip"},
+        # {Tesla.Middleware.Compression, format: "gzip"},
         Tesla.Middleware.FormUrlencoded,
         {Tesla.Middleware.DecodeJson, engine: Jason},
         {Tesla.Middleware.Headers, Keyword.get(opts, :headers, [])}
